@@ -33,6 +33,9 @@ nextflow run nf-rnaseq/main.nf -profile test,docker --outdir results
 *   Go through the results, `samplesheet`, and `schema_input.json`.
 *   Show how `/home/ubuntu/nf-rnaseq/subworkflows/local/utils_nfcore_rnaseq_pipeline/main.nf` works:
 
+
+Check  [groupTuple](https://docs.seqera.io/nextflow/reference/operator#grouptuple), [map](https://docs.seqera.io/nextflow/reference/operator#map), and [set](https://docs.seqera.io/nextflow/reference/operator#set)
+
 ```groovy
     //
     // Create channel from input file provided through params.input
@@ -90,11 +93,20 @@ cp conf/test.config data/
 cd nf-rnaseq
 ```
 
+Change the parameters to data directory in test.config
+
+```bash
+params {
+    input  = 'data/samplesheet.csv'
+}
+```
 ---
 
 ## 5. Working with nf-core Modules (TrimGalore)
 
 List all remote nf-core modules and install `trimgalore`:
+
+Note: You have to be inside nf-rnaseq directory to be able to install modules!
 
 ```bash
 nf-core modules list remote
@@ -123,7 +135,9 @@ Next, install the HISAT2 build module:
 nf-core module install hisat2/build
 ```
 
-We need the fasta file to build the index. Add this channel creation to `rnaseq.nf`:
+We need the fasta file to build the index. We need to generate restructure fasta channel to match HISAT2_BUILD. Check operator [collect](https://docs.seqera.io/nextflow/reference/stdlib-types/channel#collect):  
+
+Add this channel creation to `rnaseq.nf`:
 
 ```groovy
     fasta   = channel.fromPath(params.fasta, checkIfExists: true)
